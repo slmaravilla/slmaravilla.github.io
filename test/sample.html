@@ -55,12 +55,12 @@
       const featureLayer = new FeatureLayer({
         url: "https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/Test_Dataset_Clone_to_Portal/FeatureServer" // Replace with your feature layer URL
       });
+      map.add(featureLayer);
 
       const featureLayer2 = new FeatureLayer({
         url: "https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/SC_PROW/FeatureServer" // Replace with your feature layer URL
       });
-
-      map.add(featureLayer);
+      map.add(featureLayer2);
     });
   </script>
 </body>

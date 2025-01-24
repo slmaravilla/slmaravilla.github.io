@@ -33,8 +33,9 @@
       "esri/views/MapView",
       "esri/layers/FeatureLayer",
       "esri/identity/OAuthInfo",
-      "esri/identity/IdentityManager"
-    ], function (Map, MapView, FeatureLayer, OAuthInfo, IdentityManager) {
+      "esri/identity/IdentityManager",
+      "esri/tasks/support/Query"
+    ], function (Map, MapView, FeatureLayer, OAuthInfo, IdentityManager, Query) {
 
       // OAuth configuration
       const oauthInfo = new OAuthInfo({
@@ -89,6 +90,23 @@
           });
 
           map.add(activeFeatureLayer);
+
+          // Query the feature layer
+          activeFeatureLayer.when(() => {
+            const query = activeFeatureLayer.createQuery();
+            query.where = "1=1"; // Fetch all features
+            query.returnGeometry = false; // Only attributes, not geometry
+            query.outFields = ["*"]; // Fetch all attributes
+
+            activeFeatureLayer.queryFeatures(query).then((result) => {
+              console.log("Query Results:", result.features);
+              result.features.forEach((feature, index) => {
+                console.log(`Feature ${index + 1}:`, feature.attributes);
+              });
+            }).catch((error) => {
+              console.error("Error querying feature layer:", error);
+            });
+          });
 
           console.log("Feature layer added:", selectedUrl);
         }

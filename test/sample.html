@@ -163,6 +163,38 @@
       }
 
     });
+
+    // Create a MapView
+    const view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [120.9842, 14.5995], // Example: Manila coordinates
+      zoom: 12
+    });
+
+    // Add the feature layer
+    const featureLayer = new FeatureLayer({
+      url: "https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/Test_Dataset_Clone_to_Portal/FeatureServer", // Replace with your feature layer URL
+      outFields: ["*"],
+      layerId: 0,
+      popupEnabled: true,
+    });
+    map.add(featureLayer);
+
+    const featureLayer2 = new FeatureLayer({
+      url: "https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/SC_PROW/FeatureServer", // Replace with your feature layer URL
+      outFields: ["*"],
+    });
+    map.add(featureLayer2);
+
+
+    var query = featureLayer.createQuery();
+    query.where = "Station = 'Depot'";
+    featureLayer.queryFeatures(query)
+      .then(function (response) {
+        const stats = response.features;
+        console.log(stats);
+      });
   </script>
 
 </head>

@@ -10,90 +10,92 @@
 </head>
 
 <body>
-  <div id="viewDiv" style="height: 100vh;">
+  <!-- Dropdown for Feature Layers -->
+  <div style="position: absolute; top: 10px; left: 10px; z-index: 99; background: white; padding: 10px; border-radius: 5px;">
+    <label for="featureLayerDropdown">Select Feature Layer:</label>
+    <select id="featureLayerDropdown">
+      <option value="">-- Select a Feature Layer --</option>
+      <option value="https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/Test_Dataset_Clone_to_Portal/FeatureServer">
+        Test Dataset Clone
+      </option>
+      <option value="https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/SC_PROW/FeatureServer">
+        SC PROW
+      </option>
+    </select>
   </div>
 
-</body>
-<script>
-  require([
-    "esri/Map",
-    "esri/views/MapView",
-    "esri/layers/FeatureLayer",
-    "esri/identity/OAuthInfo",
-    "esri/identity/IdentityManager",
-    "esri/config",
-  ], function (Map, MapView, FeatureLayer, OAuthInfo, IdentityManager, esriConfig) {
+  <!-- Map View -->
+  <div id="viewDiv" style="height: 100vh;"></div>
 
-    // OAuth configuration
-    const oauthInfo = new OAuthInfo({
-      appId: "93ypiaCdiAJx888j", // Replace with your app's Client ID
-      portalUrl: "https://www.arcgis.com",
-      popupCallbackUrl: "https://slmaravilla.github.io/test/sample.html",
-      popup: true // Use popup for authentication
-    });
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/identity/OAuthInfo",
+      "esri/identity/IdentityManager"
+    ], function (Map, MapView, FeatureLayer, OAuthInfo, IdentityManager) {
 
-    IdentityManager.registerOAuthInfos([oauthInfo]);
-
-    // Automatically sign in the user
-    IdentityManager.checkSignInStatus(oauthInfo.portalUrl)
-      .then(() => {
-        console.log("User is signed in!");
-      })
-      .catch(() => {
-        // If not signed in, initiate OAuth sign-in
-        IdentityManager.getCredential(oauthInfo.portalUrl);
+      // OAuth configuration
+      const oauthInfo = new OAuthInfo({
+        appId: "93ypiaCdiAJx888j", // Replace with your app's Client ID
+        portalUrl: "https://www.arcgis.com",
+        popupCallbackUrl: "https://slmaravilla.github.io/test/sample.html",
+        popup: true // Use popup for authentication
       });
 
-    // esriConfig.apiKey= "AAPTxy8BH1VEsoebNVZXo8HurFkVGPgJ7cL1Czgdr2gflF_Q2gQ6Uxrbx12e3cCkn87Iz385w_Giy8QLKThqcrZdOx05NyQTGjsjALZvjmNgnyTIASQNdfpRLTP88SoTGyqEpn0AqtJWYXk9_tJCM_6j5N4gijO6A9PXm7bEOu-HdISgVaHeIAiB5VZGyfuRQtBgBUhcjIWBGE4futSAAI_9GisfgepoEQbvNVBMctFL9Dxa3PDEkoq6E0r22wlB6k-MAT1_Twbuaeih";
+      IdentityManager.registerOAuthInfos([oauthInfo]);
 
-    // Create a map
-    const map = new Map({
-      basemap: "topo-vector"
-    });
-
-    // Create a MapView
-    const view = new MapView({
-      container: "viewDiv",
-      map: map,
-      center: [120.9842, 14.5995], // Example: Manila coordinates
-      zoom: 12
-    });
-
-    // Add the feature layer
-    const featureLayer = new FeatureLayer({
-      url: "https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/Test_Dataset_Clone_to_Portal/FeatureServer", // Replace with your feature layer URL
-      outFields: ["*"],
-    });
-    map.add(featureLayer);
-
-    const featureLayer2 = new FeatureLayer({
-      url: "https://services8.arcgis.com/h9TUF6x5VzqLQaYx/arcgis/rest/services/SC_PROW/FeatureServer", // Replace with your feature layer URL
-      outFields: ["*"],
-    });
-    map.add(featureLayer2);
-
-
-    let highlight;
-
-    view.whenLayerView(featureLayer).then(function (layerView) {
-      view.on("click", function (event) {
-        view.hitTest(event).then(function (response) {
-          const results = response.results.filter(result => result.graphic.layer === featureLayer);
-          if (results.length > 0) {
-            const selectedGraphic = results[0].graphic;
-
-            // Highlight the feature
-            if (highlight) highlight.remove();
-            highlight = layerView.highlight(selectedGraphic);
-
-            console.log("Feature selected: ", selectedGraphic.attributes);
-          }
+      // Automatically sign in the user
+      IdentityManager.checkSignInStatus(oauthInfo.portalUrl)
+        .then(() => {
+          console.log("User is signed in!");
+        })
+        .catch(() => {
+          // If not signed in, initiate OAuth sign-in
+          IdentityManager.getCredential(oauthInfo.portalUrl);
         });
+
+      // Create a map
+      const map = new Map({
+        basemap: "topo-vector"
+      });
+
+      // Create a MapView
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [120.9842, 14.5995], // Example: Manila coordinates
+        zoom: 12
+      });
+
+      // Dropdown change event listener
+      const featureLayerDropdown = document.getElementById("featureLayerDropdown");
+      let activeFeatureLayer;
+
+      featureLayerDropdown.addEventListener("change", function () {
+        const selectedUrl = featureLayerDropdown.value;
+
+        // Remove the currently active layer if any
+        if (activeFeatureLayer) {
+          map.remove(activeFeatureLayer);
+        }
+
+        // If a valid URL is selected, add the new feature layer
+        if (selectedUrl) {
+          activeFeatureLayer = new FeatureLayer({
+            url: selectedUrl,
+            outFields: ["*"],
+          });
+
+          map.add(activeFeatureLayer);
+
+          console.log("Feature layer added:", selectedUrl);
+        }
       });
     });
+  </script>
 
-
-  });
-</script>
+</body>
 
 </html>

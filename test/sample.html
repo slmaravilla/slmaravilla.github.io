@@ -73,7 +73,25 @@
     map.add(featureLayer2);
 
 
-    console.log("Definition query: ", featureLayer.definitionExpression);
+    let highlight;
+
+    view.whenLayerView(featureLayer).then(function (layerView) {
+      view.on("click", function (event) {
+        view.hitTest(event).then(function (response) {
+          const results = response.results.filter(result => result.graphic.layer === featureLayer);
+          if (results.length > 0) {
+            const selectedGraphic = results[0].graphic;
+
+            // Highlight the feature
+            if (highlight) highlight.remove();
+            highlight = layerView.highlight(selectedGraphic);
+
+            console.log("Feature selected: ", selectedGraphic.attributes);
+          }
+        });
+      });
+    });
+
 
   });
 </script>

@@ -97,7 +97,7 @@
 
 
 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -140,7 +140,7 @@
 
     // Add the first feature layer
     const featureLayer = new FeatureLayer({
-      url: "https://gis.railway-sector.com/server/rest/services/N2_NGCP_Land_Acquisition/FeatureServer", // Replace with your feature layer URL
+      url: "https://services7.arcgis.com/jcAkCSW40GDaQ1L6/arcgis/rest/services/testPolygon1/FeatureServer", // Replace with your feature layer URL
       outFields: ["*"],
       // layerId: 1,
       popupEnabled: true
@@ -151,9 +151,9 @@
     // esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurFkVGPgJ7cL1Czgdr2gflF_Q2gQ6Uxrbx12e3cCkn87ITlm7OPiwT0qhYeW-VbNNKu5fCFeZNHpFNDUzgpkb4qfD_MPxvWV2y63HTJU8OvOat7tmnMFJsvYiLCd-e4uLyyyqlxRjnW6ONxA4Y6ZGSMI-nYPJ6Qy4m2iBvs9WpGmXv0F4lRXdmqbyRynZE_ECY72li0L9BeyWPtjtyizPcwYtOfMU_eQczGHwl0bFYgTiAT1_cCCOUxOZ";
 
     const featureLayer2 = new FeatureLayer({
-      url: "https://gis.railway-sector.com/server/rest/services/SC_NGCP_Land_Acquisition/FeatureServer", // Replace with your feature layer URL
+      url: "https://gis.railway-sector.com/server/rest/services/testPolygon3/FeatureServer", // Replace with your feature layer URL
       outFields: ["*"],
-      layerId: 1,
+      //layerId: 1,
       popupEnabled: true
     });
     map.add(featureLayer2);
@@ -166,6 +166,8 @@
         const stats = response.features;
         console.log(stats);
       });
+
+    
   });
 </script>
 
